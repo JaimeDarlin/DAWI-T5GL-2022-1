@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import model.Categoria;
 import model.Producto;
@@ -26,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
+import javax.swing.JTable;
 
 public class FrmManteProd extends JFrame {
 
@@ -38,6 +40,9 @@ public class FrmManteProd extends JFrame {
 	private JTextField txtDescripcion;
 	private JTextField txtStock;
 	private JTextField txtPrecio;
+	private JTable tblSalida;
+	
+	DefaultTableModel modelo = new DefaultTableModel();
 
 	/**
 	 * Launch the application.
@@ -61,7 +66,7 @@ public class FrmManteProd extends JFrame {
 	public FrmManteProd() {
 		setTitle("Mantenimiento de Productos");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 390);
+		setBounds(100, 100, 437, 575);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -102,7 +107,7 @@ public class FrmManteProd extends JFrame {
 		contentPane.add(lblCodigo);
 
 		cboCategorias = new JComboBox();
-		cboCategorias.setBounds(122, 70, 86, 22);
+		cboCategorias.setBounds(122, 70, 120, 22);
 		contentPane.add(cboCategorias);
 
 		JLabel lblCategora = new JLabel("Categor\u00EDa");
@@ -152,6 +157,20 @@ public class FrmManteProd extends JFrame {
 		});
 		btnBuscar.setBounds(324, 63, 89, 23);
 		contentPane.add(btnBuscar);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(10, 361, 414, 150);
+		contentPane.add(scrollPane_1);
+		
+		tblSalida = new JTable();
+		scrollPane_1.setViewportView(tblSalida);
+		tblSalida.setModel(modelo);
+		modelo.addColumn("Codigo");
+		modelo.addColumn("Nombre");
+		modelo.addColumn("Categoria");
+		modelo.addColumn("Proveedor");
+		modelo.addColumn("Stock");
+		modelo.addColumn("Precio");
 
 		llenaCombo();
 	}
@@ -248,8 +267,9 @@ public class FrmManteProd extends JFrame {
 		// generar el listado
 		List<Producto> lstProductos = em.createQuery("select p from Producto p", Producto.class).getResultList();
 		
-		// mostrar el listado en el txtArea
+		// mostrar el listado
 		for (Producto p : lstProductos) {
+			// muestra en el textArea
 			imprimir("Id Producto..: " + p.getCodigo());
 			imprimir("Nombre.......: " + p.getDescripcion());
 			imprimir("Categoria....: " + p.getCategogia() + "-" + p.getObjCategoria().getDescripcion());
@@ -257,6 +277,15 @@ public class FrmManteProd extends JFrame {
 			imprimir("Stock........: " + p.getStock());
 			imprimir("Precio.......: " + p.getPrecio());
 			imprimir("------------------------------------------------");
+			
+			// muestra en la tabla
+			Object datos[] = {p.getCodigo(),
+							  p.getDescripcion(),
+							  p.getCategogia() + "-" + p.getObjCategoria().getDescripcion(),
+							  p.getProveedor() + "-" + p.getObjProveedor().getNombre_rs(),
+							  p.getStock(),
+							  p.getPrecio()};
+			modelo.addRow(datos);
 		}
 		
 		// cerrar
